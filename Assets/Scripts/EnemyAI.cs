@@ -10,7 +10,23 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     [Header("Investigate")]
     [SerializeField] private float _investigateDuration = 5f;
 
-    private enum AIState { Patrol, Chase, Investigate }
+    [Header("Patrol")]
+    [SerializeField] private float _wanderRadius = 8f;
+    [SerializeField] private float _wanderWaitMin = 1f;
+    [SerializeField] private float _wanderWaitMax = 3f;
+    [SerializeField] private Transform[] _patrolPoints;
+
+    [Header("Confused (Post-Teleport)")]
+    [SerializeField] private float _confusedDuration = 3f;
+    [SerializeField] private float _confusedTurnSpeed = 120f;
+
+    private int _currentPatrolIndex = 0;
+    private bool _isWaiting = false;
+    private float _confusedTimer = 0f;
+    private float _wanderWaitTimer = 0f;
+    private float _wanderWaitDuration = 0f;
+
+    private enum AIState { Patrol, Chase, Investigate, Confused }
     private AIState _currentState = AIState.Patrol;
 
     private NavMeshAgent _agent;
@@ -30,6 +46,8 @@ public class EnemyAI : MonoBehaviour, ITeleportable
             _player = playerObj.transform;
         else
             Debug.LogError("[EnemyAI] No GameObject tagged 'Player' found!");
+
+        SetNewWanderDestination();
     }
 
     void Update()
@@ -41,19 +59,74 @@ public class EnemyAI : MonoBehaviour, ITeleportable
             case AIState.Patrol:      UpdatePatrol();      break;
             case AIState.Chase:       UpdateChase();       break;
             case AIState.Investigate: UpdateInvestigate(); break;
+            case AIState.Confused:    UpdateConfused();    break;
         }
     }
 
     void UpdatePatrol()
     {
-        // Patrol points can be added here later — for now the enemy stands still
-        _agent.ResetPath();
-
         if (CanSeePlayer())
         {
             _lastKnownPosition = _player.position;
+            _isWaiting = false;
             TransitionTo(AIState.Chase);
+            return;
         }
+
+        if (_patrolPoints != null && _patrolPoints.Length > 0)
+            UpdatePatrolPoints();
+        else
+            UpdateRandomWander();
+    }
+
+    void UpdatePatrolPoints()
+    {
+        if (_agent.remainingDistance <= _agent.stoppingDistance && !_isWaiting)
+        {
+            _isWaiting = true;
+            _wanderWaitDuration = Random.Range(_wanderWaitMin, _wanderWaitMax);
+            _wanderWaitTimer = 0f;
+        }
+
+        if (_isWaiting)
+        {
+            _wanderWaitTimer += Time.deltaTime;
+            if (_wanderWaitTimer >= _wanderWaitDuration)
+            {
+                _isWaiting = false;
+                _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrolPoints.Length;
+                _agent.SetDestination(_patrolPoints[_currentPatrolIndex].position);
+            }
+        }
+    }
+
+    void UpdateRandomWander()
+    {
+        if (_agent.remainingDistance <= _agent.stoppingDistance && !_isWaiting)
+        {
+            _isWaiting = true;
+            _wanderWaitDuration = Random.Range(_wanderWaitMin, _wanderWaitMax);
+            _wanderWaitTimer = 0f;
+        }
+
+        if (_isWaiting)
+        {
+            _wanderWaitTimer += Time.deltaTime;
+            if (_wanderWaitTimer >= _wanderWaitDuration)
+            {
+                _isWaiting = false;
+                SetNewWanderDestination();
+            }
+        }
+    }
+
+    void SetNewWanderDestination()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * _wanderRadius;
+        randomDirection += transform.position;
+
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, _wanderRadius, NavMesh.AllAreas))
+            _agent.SetDestination(hit.position);
     }
 
     void UpdateChase()
@@ -97,6 +170,27 @@ public class EnemyAI : MonoBehaviour, ITeleportable
         }
     }
 
+    void UpdateConfused()
+    {
+        _agent.ResetPath();
+        transform.Rotate(0f, _confusedTurnSpeed * Time.deltaTime, 0f);
+
+        _confusedTimer += Time.deltaTime;
+        if (_confusedTimer >= _confusedDuration)
+        {
+            _confusedTimer = 0f;
+            TransitionTo(AIState.Patrol);
+            SetNewWanderDestination();
+        }
+
+        if (CanSeePlayer())
+        {
+            _lastKnownPosition = _player.position;
+            _confusedTimer = 0f;
+            TransitionTo(AIState.Chase);
+        }
+    }
+
     bool CanSeePlayer()
     {
         if (Vector3.Distance(transform.position, _player.position) > _detectionRange) return false;
@@ -109,8 +203,9 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     {
         _lastKnownPosition = null;
         _investigateTimer = 0f;
-        TransitionTo(AIState.Patrol);
-        Debug.Log($"[EnemyAI] {gameObject.name} teleported — state reset.");
+        _isWaiting = false;
+        TransitionTo(AIState.Confused);
+        Debug.Log($"[EnemyAI] {gameObject.name} teleported — entering Confused state.");
     }
 
     void TransitionTo(AIState newState)
@@ -126,5 +221,7 @@ public class EnemyAI : MonoBehaviour, ITeleportable
         Gizmos.DrawWireSphere(transform.position, _detectionRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _attackRange);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, _wanderRadius);
     }
 }

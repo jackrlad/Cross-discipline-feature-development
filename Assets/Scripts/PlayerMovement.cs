@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform CameraArm;
     public Transform Camera;
     public Transform HealthDisplay;
+    public Transform CrosshairMarker;
 
     private Transform SelectedObject1 = null;
     private Transform SelectedObject2 = null;
@@ -24,16 +25,18 @@ public class PlayerMovement : MonoBehaviour
     private float cameraRot = 0;
     private float SPEED = 3000;
     private float SprintConst = 1.8f;
-    private float yaw = 0.0f;
+    private Vector3 aimDirection = Vector3.forward;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
     }
 
     void Update()
     {
         Movement();
+        UpdateAim();
         SwapControls();
         RotCamera();
 
@@ -63,6 +66,29 @@ public class PlayerMovement : MonoBehaviour
         Health -= damage;
     }
 
+    void UpdateAim()
+    {
+        Ray ray = Camera.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+        Plane groundPlane = new(Vector3.up, new Vector3(0, transform.position.y, 0));
+
+        if (groundPlane.Raycast(ray, out float distance))
+        {
+            Vector3 worldPoint = ray.GetPoint(distance);
+            worldPoint.y = transform.position.y;
+
+            if (CrosshairMarker != null)
+                CrosshairMarker.position = worldPoint;
+
+            Vector3 toTarget = worldPoint - transform.position;
+            if (toTarget.sqrMagnitude > 0.01f)
+            {
+                aimDirection = toTarget.normalized;
+                float targetYaw = Mathf.Atan2(aimDirection.x, aimDirection.z) * Mathf.Rad2Deg;
+                PlayerModel.localRotation = Quaternion.Euler(0f, targetYaw, 0f);
+            }
+        }
+    }
+
     void Movement()
     {
         Vector3 velocity = Vector3.zero;
@@ -85,19 +111,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         velocity = velocity.normalized;
-
-        if(velocity != Vector3.zero)
-        {
-            yaw = Mathf.Atan2(velocity.x, velocity.z);
-            yaw = yaw * (180f / Mathf.PI);
-
-            PlayerModel.localRotation = Quaternion.Lerp
-            (
-                Quaternion.Euler(0.0f, PlayerModel.localRotation.eulerAngles.y, 0.0f), 
-                Quaternion.Euler(0.0f, yaw, 0.0f), 
-                0.1f
-            );
-        }
 
 
 
@@ -149,7 +162,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray KnifeRay = new Ray(transform.position, PlayerModel.forward);
+            Ray KnifeRay = new Ray(transform.position, aimDirection);
             RaycastHit hit;
             Debug.DrawRay(KnifeRay.origin, KnifeRay.direction, Color.red);
             if(Physics.Raycast(KnifeRay.origin, KnifeRay.direction, out hit))
@@ -204,10 +217,6 @@ public class PlayerMovement : MonoBehaviour
             Obj1Model.rotation = Obj2Model.rotation;
             Obj2.position = tempPos;
             Obj2Model.rotation = tempRot;
-            if(Obj2 == this)
-            {
-                yaw = tempRot.y;
-            }
             knifeCount = KnifeCount.Both;
 
             try {Destroy(Obj1.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
