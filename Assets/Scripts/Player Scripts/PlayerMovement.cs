@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -97,16 +98,13 @@ public class PlayerMovement : MonoBehaviour
         Ray groundRay = new Ray(transform.position, Vector3.down);
         RaycastHit hit;
         Debug.DrawRay(groundRay.origin, groundRay.direction, Color.green);
-        if(Physics.Raycast(groundRay, out hit, 2f))
-        {
-            transform.rotation = Quaternion.Euler
-            (
-                hit.collider.gameObject.transform.rotation.eulerAngles.x, 
-                transform.rotation.eulerAngles.y, 
-                hit.collider.gameObject.transform.rotation.eulerAngles.z
-            );
-            
-        }
+        if (Physics.Raycast(groundRay, out hit, 2f))
+            {
+            // Build target rotation from surface normal while preserving Y rotation
+                Quaternion surfaceRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                Quaternion targetRotation = surfaceRotation * Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.1f);
+            }
 
 
 
@@ -203,28 +201,38 @@ public class PlayerMovement : MonoBehaviour
     }
 }
 
-    void Swap(Transform Obj1, Transform Obj1Model, Transform Obj2, Transform Obj2Model)
+   void Swap(Transform Obj1, Transform Obj1Model, Transform Obj2, Transform Obj2Model)
+{
+    if(Obj1 && Obj2)
     {
-        if(Obj1 && Obj2)
-        {
-            Vector3 tempPos = Obj1.position;
-            Quaternion tempRot = Obj1Model.rotation;
-            Obj1.position = Obj2.position;
-            Obj1Model.rotation = Obj2Model.rotation;
-            Obj2.position = tempPos;
-            Obj2Model.rotation = tempRot;
-            knifeCount = KnifeCount.Both;
+        Vector3 tempPos = Obj1.position;
+        Quaternion tempRot = Obj1Model.rotation;
 
-            
-            rb.velocity = Vector3.zero;
+        // Warp any NavMeshAgent to the new position so the agent
+        // doesn't reject the position change on a different floor
+        NavMeshAgent obj1Agent = Obj1.GetComponent<NavMeshAgent>();
+        NavMeshAgent obj2Agent = Obj2.GetComponent<NavMeshAgent>();
 
-            try {Destroy(Obj1.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
-            try {Destroy(Obj2.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
+        if (obj1Agent != null) obj1Agent.Warp(Obj2.position);
+        else Obj1.position = Obj2.position;
+        Obj1Model.rotation = Obj2Model.rotation;
 
-            Obj1.GetComponent<ITeleportable>()?.OnTeleported();
-            Obj2.GetComponent<ITeleportable>()?.OnTeleported();
-        }
+        if (obj2Agent != null) obj2Agent.Warp(tempPos);
+        else Obj2.position = tempPos;
+        Obj2Model.rotation = tempRot;
+
+        knifeCount = KnifeCount.Both;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        
+
+        try {Destroy(Obj1.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
+        try {Destroy(Obj2.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
+
+        Obj1.GetComponent<ITeleportable>()?.OnTeleported();
+        Obj2.GetComponent<ITeleportable>()?.OnTeleported();
     }
+}
 }
 
 public enum KnifeCount

@@ -67,7 +67,7 @@ public class EnemyFOVRenderer : MonoBehaviour
 
     void DrawFOVMesh()
     {
-        Vector3 origin  = new Vector3(transform.position.x, _groundOffset, transform.position.z);
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y + _groundOffset, transform.position.z);
         float angleStep = (_outerAngle * 2f) / _rayCount;
 
         Vector3[] vertices  = new Vector3[_rayCount + 2];
@@ -93,7 +93,7 @@ public class EnemyFOVRenderer : MonoBehaviour
             else
                 worldHit = origin + rayDir * effectiveRange;
 
-            worldHit.y      = _groundOffset;
+            worldHit.y = transform.position.y + _groundOffset;
             vertices[i + 1] = transform.InverseTransformPoint(worldHit);
         }
 

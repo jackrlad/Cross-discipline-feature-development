@@ -26,6 +26,8 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     [SerializeField] private float _attackDamage = 10f;
     [SerializeField] private float _attackCooldown = 1.5f;
 
+    
+
     private float _attackTimer = 0f;
     private IDamageable _playerDamageable;
 
@@ -255,4 +257,10 @@ public class EnemyAI : MonoBehaviour, ITeleportable
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, _wanderRadius);
     }
+
+    
+
+
+
+
 }
