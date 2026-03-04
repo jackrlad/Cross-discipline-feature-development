@@ -7,6 +7,8 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     [SerializeField] private float _detectionRange = 10f;
     [SerializeField] private float _attackRange = 2f;
 
+    private EnemyPerception _perception;
+
     [Header("Investigate")]
     [SerializeField] private float _investigateDuration = 5f;
 
@@ -26,8 +28,9 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     private float _wanderWaitTimer = 0f;
     private float _wanderWaitDuration = 0f;
 
-    private enum AIState { Patrol, Chase, Investigate, Confused }
+    public enum AIState { Patrol, Chase, Investigate, Confused }
     private AIState _currentState = AIState.Patrol;
+    public AIState CurrentState => _currentState;
 
     private NavMeshAgent _agent;
     private Transform _player;
@@ -37,6 +40,7 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _perception = GetComponent<EnemyPerception>();
     }
 
     void Start()
@@ -131,12 +135,12 @@ public class EnemyAI : MonoBehaviour, ITeleportable
 
     void UpdateChase()
     {
+        
         if (!CanSeePlayer())
         {
-            TransitionTo(AIState.Investigate);
-            return;
+        TransitionTo(AIState.Investigate);
+        return;
         }
-
         _lastKnownPosition = _player.position;
         _agent.SetDestination(_player.position);
 
@@ -193,10 +197,7 @@ public class EnemyAI : MonoBehaviour, ITeleportable
 
     bool CanSeePlayer()
     {
-        if (Vector3.Distance(transform.position, _player.position) > _detectionRange) return false;
-
-        Vector3 dir = (_player.position - transform.position).normalized;
-        return Physics.Raycast(transform.position, dir, out RaycastHit hit, _detectionRange) && hit.transform == _player;
+    return _perception.CanSeePlayer(transform, _player);
     }
 
     public void OnTeleported()

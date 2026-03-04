@@ -219,6 +219,9 @@ public class PlayerMovement : MonoBehaviour
             Obj2Model.rotation = tempRot;
             knifeCount = KnifeCount.Both;
 
+            
+            rb.velocity = Vector3.zero;
+
             try {Destroy(Obj1.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
             try {Destroy(Obj2.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
 
