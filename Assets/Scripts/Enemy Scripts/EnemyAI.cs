@@ -22,6 +22,13 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     [SerializeField] private float _confusedDuration = 3f;
     [SerializeField] private float _confusedTurnSpeed = 120f;
 
+    [Header("Attack")]
+    [SerializeField] private float _attackDamage = 10f;
+    [SerializeField] private float _attackCooldown = 1.5f;
+
+    private float _attackTimer = 0f;
+    private IDamageable _playerDamageable;
+
     private int _currentPatrolIndex = 0;
     private bool _isWaiting = false;
     private float _confusedTimer = 0f;
@@ -41,6 +48,7 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     {
         _agent = GetComponent<NavMeshAgent>();
         _perception = GetComponent<EnemyPerception>();
+        _agent.stoppingDistance = _attackRange;
     }
 
     void Start()
@@ -52,6 +60,8 @@ public class EnemyAI : MonoBehaviour, ITeleportable
             Debug.LogError("[EnemyAI] No GameObject tagged 'Player' found!");
 
         SetNewWanderDestination();
+
+        _playerDamageable = _player.GetComponent<IDamageable>();
     }
 
     void Update()
@@ -134,19 +144,39 @@ public class EnemyAI : MonoBehaviour, ITeleportable
     }
 
     void UpdateChase()
+{
+    if (!CanSeePlayer())
     {
-        
-        if (!CanSeePlayer())
-        {
+        _agent.stoppingDistance = 0f;
         TransitionTo(AIState.Investigate);
         return;
-        }
-        _lastKnownPosition = _player.position;
+    }
+
+    _lastKnownPosition = _player.position;
+    float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
+
+    if (distanceToPlayer <= _attackRange)
+    {
+        // Stop and attack
+        _agent.stoppingDistance = _attackRange;
         _agent.SetDestination(_player.position);
 
-        if (Vector3.Distance(transform.position, _player.position) <= _attackRange)
-            Debug.Log("[EnemyAI] In attack range!"); // Attack logic goes here
+        _attackTimer += Time.deltaTime;
+        if (_attackTimer >= _attackCooldown)
+        {
+            _attackTimer = 0f;
+            _playerDamageable?.TakeDamage(_attackDamage);
+            Debug.Log($"[EnemyAI] Attacked player for {_attackDamage} damage.");
+        }
     }
+    else
+    {
+        // Player moved out of attack range — chase them
+        _attackTimer = 0f;
+        _agent.stoppingDistance = 0f;
+        _agent.SetDestination(_player.position);
+    }
+}
 
     void UpdateInvestigate()
     {

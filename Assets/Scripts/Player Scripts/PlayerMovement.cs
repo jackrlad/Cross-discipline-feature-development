@@ -8,8 +8,8 @@ public class PlayerMovement : MonoBehaviour
     public Transform PlayerModel;
     public Transform CameraArm;
     public Transform Camera;
-    public Transform HealthDisplay;
-    public Transform CrosshairMarker;
+    
+    
 
     private Transform SelectedObject1 = null;
     private Transform SelectedObject2 = null;
@@ -17,8 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
 
     private Vector3 SpawnPos = new Vector3(-5, 1, 0);
-    private float MaxHealth = 100;
-    private float Health = 100;
+    private PlayerHealth _playerHealth;
     
     private Vector3 forward = new Vector3(1, 0, -1);
     private Vector3 right = new Vector3(-1, 0, -1);
@@ -31,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
+        _playerHealth = GetComponent<PlayerHealth>();
     }
 
     void Update()
@@ -42,52 +42,32 @@ public class PlayerMovement : MonoBehaviour
 
         CameraArm.position = transform.position;
 
-        if(Health <= 0)
-        {
-            Health = MaxHealth;
-            transform.position = SpawnPos;
-        }
-
-        if(Input.GetKeyDown(KeyCode.F))
-        {
-            TakeDamage(15);
-        }
-
-        HealthDisplay.localScale = new Vector3
-        (
-            Mathf.Lerp(HealthDisplay.localScale.x, Health / 100 * 3, 0.1f), 
-            HealthDisplay.localScale.y, 
-            HealthDisplay.localScale.z
-        );
+        
+        
+       
     }
 
-    void TakeDamage(float damage)
-    {
-        Health -= damage;
-    }
+    
 
     void UpdateAim()
+{
+    Ray ray = Camera.GetComponent<UnityEngine.Camera>().ScreenPointToRay(Input.mousePosition);
+
+    // Raycast against everything to find what the mouse is pointing at
+    if (Physics.Raycast(ray, out RaycastHit hit, 100f))
     {
-        Ray ray = Camera.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new(Vector3.up, new Vector3(0, transform.position.y, 0));
+        Vector3 targetPoint = hit.point;
+        targetPoint.y = transform.position.y;
 
-        if (groundPlane.Raycast(ray, out float distance))
+        Vector3 toTarget = targetPoint - transform.position;
+        if (toTarget.sqrMagnitude > 0.01f)
         {
-            Vector3 worldPoint = ray.GetPoint(distance);
-            worldPoint.y = transform.position.y;
-
-            if (CrosshairMarker != null)
-                CrosshairMarker.position = worldPoint;
-
-            Vector3 toTarget = worldPoint - transform.position;
-            if (toTarget.sqrMagnitude > 0.01f)
-            {
-                aimDirection = toTarget.normalized;
-                float targetYaw = Mathf.Atan2(aimDirection.x, aimDirection.z) * Mathf.Rad2Deg;
-                PlayerModel.localRotation = Quaternion.Euler(0f, targetYaw, 0f);
-            }
+            aimDirection = toTarget.normalized;
+            float targetYaw = Mathf.Atan2(aimDirection.x, aimDirection.z) * Mathf.Rad2Deg;
+            PlayerModel.localRotation = Quaternion.Euler(0f, targetYaw, 0f);
         }
     }
+}
 
     void Movement()
     {
@@ -159,53 +139,69 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void SwapControls()
+{
+    if (Input.GetMouseButtonDown(0))
+{
+    Ray knifeRay = Camera.GetComponent<UnityEngine.Camera>().ScreenPointToRay(Input.mousePosition);
+
+    if (Physics.Raycast(knifeRay, out RaycastHit cameraHit, 100f))
     {
-        if (Input.GetMouseButtonDown(0))
+        if (cameraHit.collider.gameObject.layer == 3)
         {
-            Ray KnifeRay = new Ray(transform.position, aimDirection);
-            RaycastHit hit;
-            Debug.DrawRay(KnifeRay.origin, KnifeRay.direction, Color.red);
-            if(Physics.Raycast(KnifeRay.origin, KnifeRay.direction, out hit))
-            {
-                if(hit.collider.gameObject.layer == 3) {
-                    if(knifeCount == KnifeCount.Both)
-                    {
-                        SelectedObject1 = hit.collider.gameObject.transform;
-                        SelectedObject2 = transform;
-                        knifeCount = KnifeCount.One;
+            // Check the player has a clear line of sight to the target
+            // Fire a second ray from the player to the hit object
+            Vector3 directionToTarget = (cameraHit.point - transform.position).normalized;
+            bool hasLineOfSight = !Physics.Raycast(
+                transform.position,
+                directionToTarget,
+                out RaycastHit losHit,
+                Vector3.Distance(transform.position, cameraHit.point)
+            ) || losHit.collider == cameraHit.collider;
 
-                        var prefab = Instantiate(SelectionPrefab);
-                        prefab.transform.parent = SelectedObject1;
-                        prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
-                    }
-                    else if(knifeCount == KnifeCount.One && SelectedObject1 != hit.collider.gameObject.transform)
-                    {
-                        SelectedObject2 = hit.collider.gameObject.transform;
-                        knifeCount = KnifeCount.Neither;
+            if (!hasLineOfSight)
+            {
+                Debug.Log("[PlayerMovement] No line of sight to target — knife blocked.");
+                return;
+            }
 
-                        var prefab = Instantiate(SelectionPrefab);
-                        prefab.transform.parent = SelectedObject2;
-                        prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
-                    }
-                }
-            }
-        }
-        else if (Input.GetMouseButtonDown(1))
-        {
-            if(knifeCount == KnifeCount.One)
+            if (knifeCount == KnifeCount.Both)
             {
-                Swap(SelectedObject1, SelectedObject1, transform, PlayerModel);
-                SelectedObject1 = null;
-                SelectedObject2 = null;
+                SelectedObject1 = cameraHit.collider.gameObject.transform;
+                SelectedObject2 = transform;
+                knifeCount = KnifeCount.One;
+
+                var prefab = Instantiate(SelectionPrefab);
+                prefab.transform.parent = SelectedObject1;
+                prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
             }
-            else if(knifeCount == KnifeCount.Neither)
+            else if (knifeCount == KnifeCount.One && SelectedObject1 != cameraHit.collider.gameObject.transform)
             {
-                Swap(SelectedObject1, SelectedObject1, SelectedObject2, SelectedObject2);
-                SelectedObject1 = null;
-                SelectedObject2 = null;
+                SelectedObject2 = cameraHit.collider.gameObject.transform;
+                knifeCount = KnifeCount.Neither;
+
+                var prefab = Instantiate(SelectionPrefab);
+                prefab.transform.parent = SelectedObject2;
+                prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
             }
         }
     }
+}
+    else if (Input.GetMouseButtonDown(1))
+    {
+        if (knifeCount == KnifeCount.One)
+        {
+            Swap(SelectedObject1, SelectedObject1, transform, PlayerModel);
+            SelectedObject1 = null;
+            SelectedObject2 = null;
+        }
+        else if (knifeCount == KnifeCount.Neither)
+        {
+            Swap(SelectedObject1, SelectedObject1, SelectedObject2, SelectedObject2);
+            SelectedObject1 = null;
+            SelectedObject2 = null;
+        }
+    }
+}
 
     void Swap(Transform Obj1, Transform Obj1Model, Transform Obj2, Transform Obj2Model)
     {
