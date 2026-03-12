@@ -22,9 +22,10 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 forward = new Vector3(1, 0, -1);
     private Vector3 right = new Vector3(-1, 0, -1);
     private float cameraRot = 0;
-    private float SPEED = 3000;
+    private float SPEED = 2000;
     private float SprintConst = 1.8f;
     private float yaw = 0.0f;
+    private bool OnGround = false;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -65,30 +66,30 @@ public class PlayerMovement : MonoBehaviour
 
     void Movement()
     {
-        Vector3 velocity = Vector3.zero;
+        Vector3 movement = Vector3.zero;
 
         if(Input.GetKey(KeyCode.W))
         {
-            velocity += forward;
+            movement += forward;
         }
         if(Input.GetKey(KeyCode.S))
         {
-            velocity -= forward;
+            movement -= forward;
         }
         if(Input.GetKey(KeyCode.D))
         {
-            velocity += right;
+            movement += right;
         }
         if(Input.GetKey(KeyCode.A))
         {
-            velocity -= right;
+            movement -= right;
         }
 
-        velocity = velocity.normalized;
+        movement = movement.normalized;
 
-        if(velocity != Vector3.zero)
+        if(movement != Vector3.zero)
         {
-            yaw = Mathf.Atan2(velocity.x, velocity.z);
+            yaw = Mathf.Atan2(movement.x, movement.z);
             yaw = yaw * (180f / Mathf.PI);
 
             PlayerModel.localRotation = Quaternion.Lerp
@@ -106,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawRay(groundRay.origin, groundRay.direction, Color.green);
         if(Physics.Raycast(groundRay, out hit, 2f))
         {
+            OnGround = true;
             transform.rotation = Quaternion.Euler
             (
                 hit.collider.gameObject.transform.rotation.eulerAngles.x, 
@@ -114,6 +116,23 @@ public class PlayerMovement : MonoBehaviour
             );
             
         }
+        else
+        {
+            OnGround = false;
+            transform.rotation = Quaternion.Euler
+            (
+                0, 
+                transform.rotation.eulerAngles.y, 
+                0
+            );
+        }
+
+
+
+        Vector3 velocity = Vector3.zero;
+
+        if(movement.magnitude > 0)
+            velocity = PlayerModel.forward;
 
 
 
@@ -121,7 +140,8 @@ public class PlayerMovement : MonoBehaviour
         {
             velocity = velocity * SprintConst;
         }
-        rb.AddForce(velocity * Time.deltaTime * SPEED, ForceMode.Force);
+        velocity = velocity * Time.deltaTime * SPEED;
+        rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
     }
 
     void RotCamera()
