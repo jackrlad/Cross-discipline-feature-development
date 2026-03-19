@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -9,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform CameraArm;
     public Transform Camera;
     public Transform HealthDisplay;
+    public BoxCollider KnifeCollider;
 
     private Transform SelectedObject1 = null;
     private Transform SelectedObject2 = null;
@@ -169,12 +171,41 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            Collider[] hits = Physics.OverlapBox
+            (
+                KnifeCollider.transform.position,
+                KnifeCollider.size / 2,
+                KnifeCollider.transform.rotation,
+                LayerMask.GetMask("Swappable")
+            );
+
+            if(hits.Length == 0)
+            {
+                Debug.Log("no collider found");
+                return;
+            }
+
+            Collider closestCol = hits[0];
+            float disFromOther = (transform.position - closestCol.transform.position).magnitude;
+
+            foreach(Collider col in hits)
+            {
+                Debug.DrawRay(col.transform.position, Vector3.up*100, Color.red, 10);
+                float disFromCol = (transform.position - col.transform.position).magnitude;
+
+                if(disFromCol < disFromOther)
+                {
+                    closestCol = col;
+                }
+            }
+
             Ray KnifeRay = new Ray(transform.position, PlayerModel.forward);
             RaycastHit hit;
-            Debug.DrawRay(KnifeRay.origin, KnifeRay.direction, Color.red);
-            if(Physics.Raycast(KnifeRay.origin, KnifeRay.direction, out hit))
+            Vector3 dir = (closestCol.transform.position - KnifeRay.origin).normalized;
+            Debug.DrawRay(KnifeRay.origin, dir, Color.red);
+            if(Physics.Raycast(KnifeRay.origin, dir, out hit))
             {
-                if(hit.collider.gameObject.layer == 3) {
+                if(hit.collider == closestCol) {
                     if(knifeCount == KnifeCount.Both)
                     {
                         SelectedObject1 = hit.collider.gameObject.transform;
@@ -224,7 +255,7 @@ public class PlayerMovement : MonoBehaviour
             Obj1Model.rotation = Obj2Model.rotation;
             Obj2.position = tempPos;
             Obj2Model.rotation = tempRot;
-            if(Obj2 == this)
+            if(Obj2 == transform)
             {
                 yaw = tempRot.y;
             }
