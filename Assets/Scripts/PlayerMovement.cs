@@ -16,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
     private Transform SelectedObject2 = null;
     private KnifeCount knifeCount = KnifeCount.Both;
     private Rigidbody rb;
+    
+    public float SPEED = 2000;
+    public float JUMPFORCE = 100;
 
     private Vector3 SpawnPos = new Vector3(-5, 1, 0);
     private float MaxHealth = 100;
@@ -24,7 +27,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 forward = new Vector3(1, 0, -1);
     private Vector3 right = new Vector3(-1, 0, -1);
     private float cameraRot = 0;
-    private float SPEED = 2000;
     private float SprintConst = 1.8f;
     private float yaw = 0.0f;
     private bool OnGround = false;
@@ -100,6 +102,11 @@ public class PlayerMovement : MonoBehaviour
                 Quaternion.Euler(0.0f, yaw, 0.0f), 
                 0.1f
             );
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && OnGround)
+        {
+            rb.AddForce(PlayerModel.up * JUMPFORCE, ForceMode.Impulse);
         }
 
 
