@@ -1633,51 +1633,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 811935083}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1208963630 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4614090849266739548, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
-  m_PrefabInstance: {fileID: 1730068216}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1208963634 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3365334845166923622, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
   m_PrefabInstance: {fileID: 1730068216}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1208963635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208963630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_OverrideArea: 0
-  m_Area: 0
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 1
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffff
---- !u!114 &1208963639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208963630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aa0a049d089a4c4aa511b499afe0883, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 100
-  _iFrameDuration: 1
-  _healthDisplay: {fileID: 1239038433}
-  _spawnPoint: {fileID: 1595076602}
 --- !u!4 &1239038433 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4120360127186618442, guid: 91c117751d6b86248a2828402bf01b52, type: 3}
@@ -1829,6 +1789,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 893567158116264555, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
+      propertyPath: _spawnPoint
+      value: 
+      objectReference: {fileID: 1595076602}
+    - target: {fileID: 893567158116264555, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
+      propertyPath: _healthDisplay
+      value: 
+      objectReference: {fileID: 1239038433}
     - target: {fileID: 1526603129325186806, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
       propertyPath: Camera
       value: 
@@ -1841,14 +1809,6 @@ PrefabInstance:
       propertyPath: PlayerModel
       value: 
       objectReference: {fileID: 1208963634}
-    - target: {fileID: 1526603129325186806, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
-      propertyPath: HealthDisplay
-      value: 
-      objectReference: {fileID: 1239038433}
-    - target: {fileID: 1526603129325186806, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
-      propertyPath: CrosshairMarker
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 3365334845166923622, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.02
@@ -1925,20 +1885,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7905761120733016353, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -90
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4614090849266739548, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1208963635}
-    - targetCorrespondingSourceObject: {fileID: 4614090849266739548, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1208963639}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a46dec1135741d34ba97ee67ff61bacd, type: 3}
 --- !u!1001 &1752535149
 PrefabInstance:

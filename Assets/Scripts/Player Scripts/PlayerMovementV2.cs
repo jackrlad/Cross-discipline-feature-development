@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
  
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementV2 : MonoBehaviour
 {
     [Header("References")]
     public GameObject SelectionPrefab;
@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
  
     private Transform SelectedObject1 = null;
     private Transform SelectedObject2 = null;
-    private KnifeCount knifeCount = KnifeCount.Both;
+    private KnifeAmount knifeAmount = KnifeAmount.Both;
  
     void Start()
     {
@@ -142,20 +142,20 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
  
-            if (knifeCount == KnifeCount.Both)
+            if (knifeAmount == KnifeAmount.Both)
             {
                 SelectedObject1 = cameraHit.collider.gameObject.transform;
                 SelectedObject2 = transform;
-                knifeCount = KnifeCount.One;
+                knifeAmount = KnifeAmount.One;
  
                 var prefab = Instantiate(SelectionPrefab);
                 prefab.transform.parent = SelectedObject1;
                 prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
             }
-            else if (knifeCount == KnifeCount.One && SelectedObject1 != cameraHit.collider.gameObject.transform)
+            else if (knifeAmount == KnifeAmount.One && SelectedObject1 != cameraHit.collider.gameObject.transform)
             {
                 SelectedObject2 = cameraHit.collider.gameObject.transform;
-                knifeCount = KnifeCount.Neither;
+                knifeAmount = KnifeAmount.Neither;
  
                 var prefab = Instantiate(SelectionPrefab);
                 prefab.transform.parent = SelectedObject2;
@@ -164,13 +164,13 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (Input.GetMouseButtonDown(1))
         {
-            if (knifeCount == KnifeCount.One)
+            if (knifeAmount == KnifeAmount.One)
             {
                 Swap(SelectedObject1, SelectedObject1, transform, PlayerModel);
                 SelectedObject1 = null;
                 SelectedObject2 = null;
             }
-            else if (knifeCount == KnifeCount.Neither)
+            else if (knifeAmount == KnifeAmount.Neither)
             {
                 Swap(SelectedObject1, SelectedObject1, SelectedObject2, SelectedObject2);
                 SelectedObject1 = null;
@@ -192,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
     MoveSwappable(Obj2, tempPos);
     Obj2Model.rotation = tempRot;
 
-    knifeCount = KnifeCount.Both;
+    knifeAmount = KnifeAmount.Both;
     rb.velocity = Vector3.zero;
     rb.angularVelocity = Vector3.zero;
 
@@ -238,7 +238,7 @@ void MoveSwappable(Transform obj, Vector3 targetPos)
 }
 }
  
-public enum KnifeCount
+public enum KnifeAmount
 {
     Both,
     One,
