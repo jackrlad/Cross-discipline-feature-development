@@ -14,7 +14,6 @@ public class PlayerMovementController : MonoBehaviour
     
     private Vector3 forward = new Vector3(1, 0, -1);
     private Vector3 right = new Vector3(-1, 0, -1);
-    private float SprintConst = 1.8f;
     public float yaw = 0.0f;
     private bool OnGround = false;
     private bool CanJump = true;
@@ -111,13 +110,6 @@ public class PlayerMovementController : MonoBehaviour
 
         if(movement.magnitude > 0)
             velocity = PlayerModel.forward;
-
-
-
-        if(Input.GetKey(KeyCode.LeftShift))
-        {
-            velocity = velocity * SprintConst;
-        }
         velocity = velocity * Time.deltaTime * SPEED;
         rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
     }
