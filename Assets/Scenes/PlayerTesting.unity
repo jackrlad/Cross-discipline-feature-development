@@ -458,7 +458,7 @@ GameObject:
   - component: {fileID: 556845965}
   - component: {fileID: 556845966}
   m_Layer: 0
-  m_Name: Health
+  m_Name: Health Display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -825,6 +825,9 @@ GameObject:
   - component: {fileID: 931527767}
   - component: {fileID: 931527772}
   - component: {fileID: 931527771}
+  - component: {fileID: 931527775}
+  - component: {fileID: 931527774}
+  - component: {fileID: 931527773}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -883,14 +886,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ed400e0c1e8b6e4fb913c56abb650c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectionPrefab: {fileID: 278057425520619385, guid: d0a8dac8cbea75749bdb12d7ac23cafb, type: 3}
   PlayerModel: {fileID: 1359052687}
-  CameraArm: {fileID: 2123847927}
   Camera: {fileID: 1435786381}
-  HealthDisplay: {fileID: 556845965}
-  KnifeCollider: {fileID: 1106765555}
   SPEED: 2000
-  JUMPFORCE: 100
+  JUMPFORCE: 10
+  yaw: 0
 --- !u!54 &931527772
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -918,6 +918,47 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &931527773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931527766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbb3d824c619a8c44ba355382abd4378, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KnifeCollider: {fileID: 1106765555}
+  PlayerModel: {fileID: 1359052687}
+  SelectionPrefab: {fileID: 278057425520619385, guid: d0a8dac8cbea75749bdb12d7ac23cafb, type: 3}
+--- !u!114 &931527774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931527766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aaf185cb92c0114f8b31b90713e7eff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HealthDisplay: {fileID: 556845965}
+--- !u!114 &931527775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931527766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf71b2aae729135458bdb9d34a5d326c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraArm: {fileID: 2123847927}
 --- !u!1 &1106765554
 GameObject:
   m_ObjectHideFlags: 0
