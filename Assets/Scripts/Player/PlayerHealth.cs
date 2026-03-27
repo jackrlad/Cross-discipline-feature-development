@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IHealth
 {    
+    public Transform HealthDisplay;
+    
     private Vector3 SpawnPos = new Vector3(-5, 1, 0);
     private float MaxHealth = 100;
     private float Health = 100;
-    public Transform HealthDisplay;
     
     void Start()
     {
@@ -20,11 +21,6 @@ public class PlayerHealth : MonoBehaviour, IHealth
         {
             Health = MaxHealth;
             transform.position = SpawnPos;
-        }
-
-        if(Input.GetKeyDown(KeyCode.F))
-        {
-            TakeDamage(15);
         }
 
         HealthDisplay.localScale = new Vector3

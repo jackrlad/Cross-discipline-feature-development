@@ -12,18 +12,18 @@ public class PlayerMovementController : MonoBehaviour
     public float SPEED = 2000;
     public float JUMPFORCE = 10;
     
-    private Vector3 forward = new Vector3(1, 0, -1);
-    private Vector3 right = new Vector3(-1, 0, -1);
+    private InputReader ir;
     public float yaw = 0.0f;
     private bool OnGround = false;
     private bool CanJump = true;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        ir = GetComponent<InputReader>();
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
+    void LateUpdate()
     {
         Movement();
     }
@@ -35,24 +35,8 @@ public class PlayerMovementController : MonoBehaviour
 
     void Movement()
     {
-        Vector3 movement = Vector3.zero;
-
-        if(Input.GetKey(KeyCode.W))
-        {
-            movement += forward;
-        }
-        if(Input.GetKey(KeyCode.S))
-        {
-            movement -= forward;
-        }
-        if(Input.GetKey(KeyCode.D))
-        {
-            movement += right;
-        }
-        if(Input.GetKey(KeyCode.A))
-        {
-            movement -= right;
-        }
+        Vector2 rotatedMovement = RotateVector2(ir.Move, 45);
+        Vector3 movement = new Vector3(-rotatedMovement.x, 0, -rotatedMovement.y);
 
         movement = movement.normalized;
 
@@ -69,29 +53,32 @@ public class PlayerMovementController : MonoBehaviour
             );
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && CanJump && OnGround)
+        
+        if(ir != null && ir.Jump)
         {
-            rb.AddForce(PlayerModel.up * JUMPFORCE, ForceMode.Impulse);
-            CanJump = false;
+            if (CanJump && OnGround)
+            {
+                Debug.Log("Jump");
+                rb.AddForce(PlayerModel.up * JUMPFORCE, ForceMode.Impulse);
+                CanJump = false;
+            }
         }
-
+        else CanJump = true;
 
 
         Ray groundRay = new Ray(transform.position, Vector3.down);
         RaycastHit hit;
-        Debug.DrawRay(groundRay.origin, groundRay.direction, Color.green);
+        Debug.DrawRay(groundRay.origin, groundRay.direction * 1.8f, Color.green);
         if(Physics.Raycast(groundRay, out hit, 2f))
         {
             OnGround = true;
+            Debug.Log(hit.normal);
             transform.rotation = Quaternion.Euler
             (
-                hit.normal.x, 
+                hit.normal.z * Mathf.Rad2Deg, 
                 transform.rotation.eulerAngles.y, 
-                hit.normal.z
+                -1 * hit.normal.x * Mathf.Rad2Deg
             );
-            Debug.Log(hit.collider.gameObject.transform.rotation.eulerAngles.x);
-            Debug.Log(hit.collider.gameObject.transform.rotation.eulerAngles.z);
-            Debug.Log("-----");
         }
         else
         {
@@ -104,13 +91,19 @@ public class PlayerMovementController : MonoBehaviour
             );
         }
 
-        if(!OnGround) CanJump = true;
-
         Vector3 velocity = Vector3.zero;
 
         if(movement.magnitude > 0)
             velocity = PlayerModel.forward;
-        velocity = velocity * Time.deltaTime * SPEED;
+        velocity = velocity * SPEED;
         rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
+    }
+
+    Vector2 RotateVector2(Vector2 vector, float degrees)
+    {
+        float newX = Mathf.Cos(degrees) * vector.x - Mathf.Sin(degrees) * vector.y;
+        float newY = Mathf.Sin(degrees) * vector.x + Mathf.Cos(degrees) * vector.y;
+        
+        return new Vector2(newX, newY);
     }
 }

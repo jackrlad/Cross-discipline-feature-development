@@ -5,11 +5,13 @@ using UnityEngine;
 public class PlayerCameraController : MonoBehaviour
 {
     public Transform CameraArm;
+
+    private InputReader ir;
     private float cameraRot = 0;
-    // Start is called before the first frame update
+
     void Start()
     {
-        
+        ir = GetComponent<InputReader>();
     }
 
     // Update is called once per frame
@@ -25,11 +27,11 @@ public class PlayerCameraController : MonoBehaviour
     {
         cameraRot = 0;
 
-        if(Input.GetKey(KeyCode.Q))
+        if(ir.cLeft)
         {
             cameraRot -= 90;
         }
-        if(Input.GetKey(KeyCode.E))
+        if(ir.cRight)
         {
             cameraRot += 90;
         }

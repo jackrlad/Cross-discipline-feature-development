@@ -11,11 +11,11 @@ public class SwapSystem : MonoBehaviour
     private Transform SelectedObject1 = null;
     private Transform SelectedObject2 = null;
     private KnifeCount knifeCount = KnifeCount.Both;
-    private Rigidbody rb;
+    private InputReader ir;
     
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        ir = GetComponent<InputReader>();
     }
 
     void Update()
@@ -25,7 +25,7 @@ public class SwapSystem : MonoBehaviour
 
     void SwapControls()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (ir.Attack)
         {
             Collider[] hits = Physics.OverlapBox
             (
@@ -84,7 +84,7 @@ public class SwapSystem : MonoBehaviour
                 }
             }
         }
-        else if (Input.GetMouseButtonDown(1))
+        else if (ir.Swap)
         {
             if(knifeCount == KnifeCount.One)
             {
