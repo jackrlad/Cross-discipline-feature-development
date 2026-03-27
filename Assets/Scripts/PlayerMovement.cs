@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private Transform SelectedObject2 = null;
     private KnifeCount knifeCount = KnifeCount.Both;
     private Rigidbody rb;
-    
+
     public float SPEED = 2000;
     public float JUMPFORCE = 100;
 
@@ -119,11 +119,13 @@ public class PlayerMovement : MonoBehaviour
             OnGround = true;
             transform.rotation = Quaternion.Euler
             (
-                hit.collider.gameObject.transform.rotation.eulerAngles.x, 
+                hit.normal.x, 
                 transform.rotation.eulerAngles.y, 
-                hit.collider.gameObject.transform.rotation.eulerAngles.z
+                hit.normal.z
             );
-            
+            Debug.Log(hit.collider.gameObject.transform.rotation.eulerAngles.x);
+            Debug.Log(hit.collider.gameObject.transform.rotation.eulerAngles.z);
+            Debug.Log("-----");
         }
         else
         {
