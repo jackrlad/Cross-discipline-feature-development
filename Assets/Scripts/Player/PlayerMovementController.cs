@@ -9,7 +9,7 @@ public class PlayerMovementController : MonoBehaviour
     public Transform Camera;
 
     private Rigidbody rb;
-    public float SPEED = 2000;
+    public float SPEED = 10;
     public float JUMPFORCE = 10;
     
     private InputReader ir;

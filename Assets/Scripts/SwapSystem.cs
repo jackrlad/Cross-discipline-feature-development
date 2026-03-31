@@ -119,6 +119,9 @@ public class SwapSystem : MonoBehaviour
 
             try {Destroy(Obj1.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
             try {Destroy(Obj2.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
+
+            Obj1.GetComponent<ITeleportable>()?.OnTeleported();
+            Obj2.GetComponent<ITeleportable>()?.OnTeleported();
         }
     }
 }
