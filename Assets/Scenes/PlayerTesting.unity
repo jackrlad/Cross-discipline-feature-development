@@ -122,6 +122,59 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &182388893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 182388894}
+  - component: {fileID: 182388895}
+  m_Layer: 0
+  m_Name: Attack Collision
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &182388894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182388893}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0, y: 0, z: 1.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1359052687}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &182388895
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182388893}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 2, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &313889297
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,7 +879,7 @@ GameObject:
   - component: {fileID: 755214705}
   - component: {fileID: 755214704}
   - component: {fileID: 755214703}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Bridge Part2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1173,6 +1226,7 @@ GameObject:
   - component: {fileID: 931527773}
   - component: {fileID: 931527777}
   - component: {fileID: 931527776}
+  - component: {fileID: 931527778}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1187,7 +1241,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 931527766}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: f8d08e4c6cf287443bd6edf01520537a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1346,6 +1400,20 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &931527778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931527766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a9f477caa4122c4db9cc1f94cca1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttackCollision: {fileID: 182388895}
+  PlayerDamage: 10
 --- !u!1 &985851370
 GameObject:
   m_ObjectHideFlags: 0
@@ -1536,6 +1604,7 @@ Transform:
   - {fileID: 726586022}
   - {fileID: 1454925252}
   - {fileID: 1106765556}
+  - {fileID: 182388894}
   m_Father: {fileID: 931527770}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1435786380

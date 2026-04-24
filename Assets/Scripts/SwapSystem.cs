@@ -18,86 +18,79 @@ public class SwapSystem : MonoBehaviour
         ir = GetComponent<InputReader>();
     }
 
-    void Update()
+    public void SwapHit()
     {
-        SwapControls();
-    }
+        Collider[] hits = Physics.OverlapBox
+        (
+            KnifeCollider.transform.position,
+            KnifeCollider.size / 2,
+            KnifeCollider.transform.rotation,
+            LayerMask.GetMask("Swappable")
+        );
 
-    void SwapControls()
-    {
-        if (ir.Attack)
+        if(hits.Length == 0)
         {
-            Collider[] hits = Physics.OverlapBox
-            (
-                KnifeCollider.transform.position,
-                KnifeCollider.size / 2,
-                KnifeCollider.transform.rotation,
-                LayerMask.GetMask("Swappable")
-            );
+            Debug.Log("no collider found");
+            return;
+        }
 
-            if(hits.Length == 0)
+        Collider closestCol = hits[0];
+        float disFromOther = (transform.position - closestCol.transform.position).magnitude;
+
+        foreach(Collider col in hits)
+        {
+            Debug.DrawRay(col.transform.position, Vector3.up*100, Color.red, 10);
+            float disFromCol = (transform.position - col.transform.position).magnitude;
+
+            if(disFromCol < disFromOther)
             {
-                Debug.Log("no collider found");
-                return;
+                closestCol = col;
             }
+        }
 
-            Collider closestCol = hits[0];
-            float disFromOther = (transform.position - closestCol.transform.position).magnitude;
-
-            foreach(Collider col in hits)
-            {
-                Debug.DrawRay(col.transform.position, Vector3.up*100, Color.red, 10);
-                float disFromCol = (transform.position - col.transform.position).magnitude;
-
-                if(disFromCol < disFromOther)
+        Ray KnifeRay = new Ray(transform.position, PlayerModel.forward);
+        RaycastHit hit;
+        Vector3 dir = (closestCol.transform.position - KnifeRay.origin).normalized;
+        Debug.DrawRay(KnifeRay.origin, dir, Color.red);
+        if(Physics.Raycast(KnifeRay.origin, dir, out hit))
+        {
+            if(hit.collider == closestCol) {
+                if(knifeCount == KnifeCount.Both)
                 {
-                    closestCol = col;
+                    SelectedObject1 = hit.collider.gameObject.transform;
+                    SelectedObject2 = transform;
+                    knifeCount = KnifeCount.One;
+
+                    var prefab = Instantiate(SelectionPrefab);
+                    prefab.transform.parent = SelectedObject1;
+                    prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
                 }
-            }
+                else if(knifeCount == KnifeCount.One && SelectedObject1 != hit.collider.gameObject.transform)
+                {
+                    SelectedObject2 = hit.collider.gameObject.transform;
+                    knifeCount = KnifeCount.Neither;
 
-            Ray KnifeRay = new Ray(transform.position, PlayerModel.forward);
-            RaycastHit hit;
-            Vector3 dir = (closestCol.transform.position - KnifeRay.origin).normalized;
-            Debug.DrawRay(KnifeRay.origin, dir, Color.red);
-            if(Physics.Raycast(KnifeRay.origin, dir, out hit))
-            {
-                if(hit.collider == closestCol) {
-                    if(knifeCount == KnifeCount.Both)
-                    {
-                        SelectedObject1 = hit.collider.gameObject.transform;
-                        SelectedObject2 = transform;
-                        knifeCount = KnifeCount.One;
-
-                        var prefab = Instantiate(SelectionPrefab);
-                        prefab.transform.parent = SelectedObject1;
-                        prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
-                    }
-                    else if(knifeCount == KnifeCount.One && SelectedObject1 != hit.collider.gameObject.transform)
-                    {
-                        SelectedObject2 = hit.collider.gameObject.transform;
-                        knifeCount = KnifeCount.Neither;
-
-                        var prefab = Instantiate(SelectionPrefab);
-                        prefab.transform.parent = SelectedObject2;
-                        prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
-                    }
+                    var prefab = Instantiate(SelectionPrefab);
+                    prefab.transform.parent = SelectedObject2;
+                    prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
                 }
             }
         }
-        else if (ir.Swap)
+    }
+
+    public void SwapTrigger()
+    {
+        if(knifeCount == KnifeCount.One)
         {
-            if(knifeCount == KnifeCount.One)
-            {
-                Swap(SelectedObject1, SelectedObject1, transform, PlayerModel);
-                SelectedObject1 = null;
-                SelectedObject2 = null;
-            }
-            else if(knifeCount == KnifeCount.Neither)
-            {
-                Swap(SelectedObject1, SelectedObject1, SelectedObject2, SelectedObject2);
-                SelectedObject1 = null;
-                SelectedObject2 = null;
-            }
+            Swap(SelectedObject1, SelectedObject1, transform, PlayerModel);
+            SelectedObject1 = null;
+            SelectedObject2 = null;
+        }
+        else if(knifeCount == KnifeCount.Neither)
+        {
+            Swap(SelectedObject1, SelectedObject1, SelectedObject2, SelectedObject2);
+            SelectedObject1 = null;
+            SelectedObject2 = null;
         }
     }
 

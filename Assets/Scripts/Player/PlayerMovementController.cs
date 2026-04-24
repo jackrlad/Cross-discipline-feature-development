@@ -58,7 +58,6 @@ public class PlayerMovementController : MonoBehaviour
         {
             if (CanJump && OnGround)
             {
-                Debug.Log("Jump");
                 rb.AddForce(PlayerModel.up * JUMPFORCE, ForceMode.Impulse);
                 CanJump = false;
             }
@@ -66,13 +65,13 @@ public class PlayerMovementController : MonoBehaviour
         else CanJump = true;
 
 
-        Ray groundRay = new Ray(transform.position, Vector3.down);
+        Ray groundRay = new Ray(transform.position, -transform.up);
         RaycastHit hit;
         Debug.DrawRay(groundRay.origin, groundRay.direction * 1.8f, Color.green);
         if(Physics.Raycast(groundRay, out hit, 2f))
         {
             OnGround = true;
-            Debug.Log(hit.normal);
+            
             transform.rotation = Quaternion.Euler
             (
                 hit.normal.z * Mathf.Rad2Deg, 
