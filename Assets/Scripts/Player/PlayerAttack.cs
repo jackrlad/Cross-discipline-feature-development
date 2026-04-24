@@ -37,7 +37,6 @@ public class PlayerAttack : MonoBehaviour
         }
         else if(!isHoldingAttack && AttackCooldown > 0 && AttackCooldown < MaxAttackCooldown)
         {
-            Debug.Log("Swap hit!");
             swap.SwapHit();
             AttackCooldown = MaxAttackCooldown;
         }

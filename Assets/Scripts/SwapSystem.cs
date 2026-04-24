@@ -42,7 +42,7 @@ public class SwapSystem : MonoBehaviour
             Debug.DrawRay(col.transform.position, Vector3.up*100, Color.red, 10);
             float disFromCol = (transform.position - col.transform.position).magnitude;
 
-            if(disFromCol < disFromOther)
+            if(disFromCol < disFromOther && col.transform.parent.parent.gameObject != gameObject)
             {
                 closestCol = col;
             }
@@ -52,7 +52,7 @@ public class SwapSystem : MonoBehaviour
         RaycastHit hit;
         Vector3 dir = (closestCol.transform.position - KnifeRay.origin).normalized;
         Debug.DrawRay(KnifeRay.origin, dir, Color.red);
-        if(Physics.Raycast(KnifeRay.origin, dir, out hit))
+        if(Physics.Raycast(KnifeRay.origin, dir, out hit, 20f, LayerMask.GetMask("Swappable")))
         {
             if(hit.collider == closestCol) {
                 if(knifeCount == KnifeCount.Both)
