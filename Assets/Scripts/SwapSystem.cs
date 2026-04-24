@@ -18,7 +18,7 @@ public class SwapSystem : MonoBehaviour
         ir = GetComponent<InputReader>();
     }
 
-    public void SwapHit()
+    public KnifeCount SwapHit()
     {
         Collider[] hits = Physics.OverlapBox
         (
@@ -31,7 +31,7 @@ public class SwapSystem : MonoBehaviour
         if(hits.Length == 0)
         {
             Debug.Log("no collider found");
-            return;
+            return knifeCount;
         }
 
         Collider closestCol = hits[0];
@@ -76,9 +76,10 @@ public class SwapSystem : MonoBehaviour
                 }
             }
         }
+        return knifeCount;
     }
 
-    public void SwapTrigger()
+    public KnifeCount SwapTrigger()
     {
         if(knifeCount == KnifeCount.One)
         {
@@ -92,6 +93,7 @@ public class SwapSystem : MonoBehaviour
             SelectedObject1 = null;
             SelectedObject2 = null;
         }
+        return knifeCount;
     }
 
         void Swap(Transform Obj1, Transform Obj1Model, Transform Obj2, Transform Obj2Model)

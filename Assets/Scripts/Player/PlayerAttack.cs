@@ -9,6 +9,7 @@ public class PlayerAttack : MonoBehaviour
 
     private InputReader ir;
     private SwapSystem swap;
+    private KnifeCount knifeCount = KnifeCount.Both;
     private float MaxAttackCooldown = 0.3f;
     private float AttackCooldown;
     private bool isHoldingAttack = true;
@@ -37,7 +38,7 @@ public class PlayerAttack : MonoBehaviour
         }
         else if(!isHoldingAttack && AttackCooldown > 0 && AttackCooldown < MaxAttackCooldown)
         {
-            swap.SwapHit();
+            knifeCount = swap.SwapHit();
             AttackCooldown = MaxAttackCooldown;
         }
         
@@ -51,7 +52,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (ir.Swap)
         {
-            swap.SwapTrigger();
+            knifeCount = swap.SwapTrigger();
         }
     }
 
@@ -70,7 +71,16 @@ public class PlayerAttack : MonoBehaviour
             IDamageable damageable = col.GetComponent<IDamageable>();
 
             if(col.gameObject != gameObject && damageable != null)
-                damageable.TakeDamage(PlayerDamage);
+            {
+                float damageConst;
+                if (knifeCount == KnifeCount.Both)
+                    damageConst = 1;
+                else if(knifeCount == KnifeCount.One)
+                    damageConst = 0.75f;
+                else
+                    damageConst = 0.5f;
+                damageable.TakeDamage(PlayerDamage * damageConst);
+            }
         }
     }
 }
