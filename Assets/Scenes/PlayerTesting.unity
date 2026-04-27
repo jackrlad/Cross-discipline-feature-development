@@ -1332,6 +1332,7 @@ MonoBehaviour:
   KnifeCollider: {fileID: 1106765555}
   PlayerModel: {fileID: 1359052687}
   SelectionPrefab: {fileID: 278057425520619385, guid: d0a8dac8cbea75749bdb12d7ac23cafb, type: 3}
+  smallestKnifeHitRange: 45
 --- !u!114 &931527774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1555,7 +1556,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3, y: 3, z: 50}
+  m_Size: {x: 10, y: 10, z: 50}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1106765556
 Transform:
