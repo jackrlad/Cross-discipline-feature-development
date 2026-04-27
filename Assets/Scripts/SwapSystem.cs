@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class SwapSystem : MonoBehaviour
     public BoxCollider KnifeCollider;
     public Transform PlayerModel;
     public GameObject SelectionPrefab;
+    public float smallestKnifeHitRange;
 
     private Transform SelectedObject1 = null;
     private Transform SelectedObject2 = null;
@@ -30,7 +32,7 @@ public class SwapSystem : MonoBehaviour
 
         if(hits.Length == 0)
         {
-            Debug.Log("no collider found");
+            Debug.Log("No Collider Found.");
             return knifeCount;
         }
 
@@ -42,9 +44,18 @@ public class SwapSystem : MonoBehaviour
             Debug.DrawRay(col.transform.position, Vector3.up*100, Color.red, 10);
             float disFromCol = (transform.position - col.transform.position).magnitude;
 
-            if(disFromCol < disFromOther && col.transform.parent.parent.gameObject != gameObject)
+            bool closest = disFromCol < disFromOther;
+            bool playerObject = col.transform.root.gameObject == gameObject;
+            Vector3 playerToCol = col.transform.position - transform.position;
+            float angle = Vector3.Angle(PlayerModel.transform.forward, playerToCol);
+            bool outOfRange = angle > smallestKnifeHitRange;
+            Debug.Log(angle);
+            Debug.DrawLine(transform.position, transform.position + PlayerModel.forward, Color.black, 10f);
+
+            if(closest && !playerObject && !outOfRange)
             {
                 closestCol = col;
+                disFromOther = disFromCol;
             }
         }
 
