@@ -22,6 +22,7 @@ public class InputReader : MonoBehaviour
     private InputAction cRightAction;
     private InputAction cLeftAction;
     private InputAction pauseAction;
+    
 
     void Awake()
     {
@@ -35,6 +36,7 @@ public class InputReader : MonoBehaviour
         cRightAction = gameplay.FindAction("Camera Right", true);
         cLeftAction = gameplay.FindAction("Camera Left", true);
         pauseAction = gameplay.FindAction("Pause", true);
+       
     }
 
     private void OnEnable()
