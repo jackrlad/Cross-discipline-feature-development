@@ -12,6 +12,8 @@ public class PlayerMovementController : MonoBehaviour
     public float SPEED = 10;
     public float JUMPFORCE = 10;
     public float RotationSpeed = 0.1f;
+    private Vector3 forward = new Vector3(1, 0, -1);
+    private Vector3 right = new Vector3(-1, 0, -1);
     
     private InputReader ir;
     public float yaw = 0.0f;
@@ -38,6 +40,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         Vector2 rotatedMovement = RotateVector2(ir.Move, 45);
         Vector3 movement = new Vector3(-rotatedMovement.x, 0, -rotatedMovement.y);
+        Debug.Log(rotatedMovement);
 
         movement = movement.normalized;
 
