@@ -12,6 +12,7 @@ public class EnemyFOVRenderer : MonoBehaviour
     [SerializeField] private Color _investigateColour = new Color(1f, 0.9f, 0f, 0.4f);
     [SerializeField] private Color _chaseColour       = new Color(1f, 0.1f, 0.1f, 0.5f);
     [SerializeField] private Color _confusedColour    = new Color(0.5f, 0f, 1f, 0.4f);
+    [SerializeField] private Material fovMat;
 
     private Mesh _mesh;
     private MeshRenderer _meshRenderer;
@@ -29,7 +30,6 @@ public class EnemyFOVRenderer : MonoBehaviour
         _enemyAI      = GetComponentInParent<EnemyAI>();
         _meshRenderer = GetComponent<MeshRenderer>();
 
-        Material fovMat = new Material(Shader.Find("Legacy Shaders/Transparent/Diffuse"));
         fovMat.color = _patrolColour;
         _meshRenderer.material = fovMat;
 

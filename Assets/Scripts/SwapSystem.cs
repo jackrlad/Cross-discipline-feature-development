@@ -48,7 +48,7 @@ public class SwapSystem : MonoBehaviour
             bool playerObject = col.transform.root.gameObject == gameObject;
             Vector3 playerToCol = col.transform.position - transform.position;
             float angle = Vector3.Angle(PlayerModel.transform.forward, playerToCol);
-            bool outOfRange = angle > smallestKnifeHitRange;
+            bool outOfRange = Mathf.Abs(angle) > smallestKnifeHitRange;
             Debug.Log(angle);
             Debug.DrawLine(transform.position, transform.position + PlayerModel.forward, Color.black, 10f);
 

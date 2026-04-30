@@ -101,6 +101,7 @@ MonoBehaviour:
   _investigateColour: {r: 1, g: 0.9, b: 0, a: 0.21176471}
   _chaseColour: {r: 1, g: 0.1, b: 0.1, a: 0.26666668}
   _confusedColour: {r: 0.5, g: 0, b: 1, a: 0.2509804}
+  fovMat: {fileID: 0}
 --- !u!1 &2831904436465406816
 GameObject:
   m_ObjectHideFlags: 0
