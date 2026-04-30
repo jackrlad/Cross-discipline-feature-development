@@ -11,6 +11,7 @@ public class PlayerMovementController : MonoBehaviour
     private Rigidbody rb;
     public float SPEED = 10;
     public float JUMPFORCE = 10;
+    public float RotationSpeed = 0.1f;
     
     private InputReader ir;
     public float yaw = 0.0f;
@@ -72,21 +73,31 @@ public class PlayerMovementController : MonoBehaviour
         {
             OnGround = true;
             
-            transform.rotation = Quaternion.Euler
+            var newRot = Quaternion.Euler
             (
                 hit.normal.z * Mathf.Rad2Deg, 
                 transform.rotation.eulerAngles.y, 
                 -1 * hit.normal.x * Mathf.Rad2Deg
             );
+
+            transform.rotation = Quaternion.Lerp
+            (
+                transform.rotation, newRot, RotationSpeed
+            );
         }
         else
         {
             OnGround = false;
-            transform.rotation = Quaternion.Euler
+            var newRot = Quaternion.Euler
             (
                 0, 
                 transform.rotation.eulerAngles.y, 
                 0
+            );
+
+            transform.rotation = Quaternion.Lerp
+            (
+                transform.rotation, newRot, RotationSpeed
             );
         }
 

@@ -7,7 +7,7 @@ public class SwapSystem : MonoBehaviour
 {
     public BoxCollider KnifeCollider;
     public Transform PlayerModel;
-    public GameObject SelectionPrefab;
+    public Material SelectionMaterial;
     public float smallestKnifeHitRange;
 
     private Transform SelectedObject1 = null;
@@ -72,18 +72,24 @@ public class SwapSystem : MonoBehaviour
                     SelectedObject2 = transform;
                     knifeCount = KnifeCount.One;
 
-                    var prefab = Instantiate(SelectionPrefab);
-                    prefab.transform.parent = SelectedObject1;
-                    prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
+                    Renderer rend = SelectedObject1.GetComponent<Renderer>();
+                    Material[] mats = rend.materials;
+                    Array.Resize(ref mats, mats.Length + 1);
+                    mats[mats.Length - 1] = SelectionMaterial;
+
+                    rend.materials = mats;
                 }
                 else if(knifeCount == KnifeCount.One && SelectedObject1 != hit.collider.gameObject.transform)
                 {
                     SelectedObject2 = hit.collider.gameObject.transform;
                     knifeCount = KnifeCount.Neither;
 
-                    var prefab = Instantiate(SelectionPrefab);
-                    prefab.transform.parent = SelectedObject2;
-                    prefab.transform.localPosition = new Vector3(0, 1.5f, 0);
+                    Renderer rend = SelectedObject2.GetComponent<Renderer>();
+                    Material[] mats = rend.materials;
+                    Array.Resize(ref mats, mats.Length + 1);
+                    mats[mats.Length - 1] = SelectionMaterial;
+
+                    rend.materials = mats;
                 }
             }
         }
@@ -94,40 +100,81 @@ public class SwapSystem : MonoBehaviour
     {
         if(knifeCount == KnifeCount.One)
         {
-            Swap(SelectedObject1, SelectedObject1, transform, PlayerModel);
+            Swap(SelectedObject1);
             SelectedObject1 = null;
             SelectedObject2 = null;
         }
         else if(knifeCount == KnifeCount.Neither)
         {
-            Swap(SelectedObject1, SelectedObject1, SelectedObject2, SelectedObject2);
+            Swap(SelectedObject1, SelectedObject2);
             SelectedObject1 = null;
             SelectedObject2 = null;
         }
         return knifeCount;
     }
 
-        void Swap(Transform Obj1, Transform Obj1Model, Transform Obj2, Transform Obj2Model)
+    void Swap(Transform Obj1, Transform Obj2)
     {
         if(Obj1 && Obj2)
         {
             Vector3 tempPos = Obj1.position;
-            Quaternion tempRot = Obj1Model.rotation;
+            Quaternion tempRot = Obj1.rotation;
             Obj1.position = Obj2.position;
-            Obj1Model.rotation = Obj2Model.rotation;
+            Obj1.rotation = Obj2.rotation;
             Obj2.position = tempPos;
-            Obj2Model.rotation = tempRot;
+            Obj2.rotation = tempRot;
             if(Obj2 == transform)
             {
                 GetComponent<PlayerMovementController>().setYaw(tempRot.y);
             }
             knifeCount = KnifeCount.Both;
 
-            try {Destroy(Obj1.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
-            try {Destroy(Obj2.GetComponentInChildren<ParticleSystem>().gameObject);} catch {}
+
+            Renderer rend = Obj1.GetComponent<Renderer>();
+            var mats = new List<Material>(rend.materials);
+            mats.RemoveAll(m => m.name.Contains(SelectionMaterial.name));  
+
+            rend.materials = mats.ToArray();
+
+
+            rend = Obj2.GetComponent<Renderer>();
+            mats = new List<Material>(rend.materials);
+            mats.RemoveAll(m => m.name.Contains(SelectionMaterial.name));
+
+            rend.materials = mats.ToArray();
+
 
             Obj1.GetComponent<ITeleportable>()?.OnTeleported();
             Obj2.GetComponent<ITeleportable>()?.OnTeleported();
+        }
+    }
+
+    void Swap(Transform Obj1)
+    {
+        if(Obj1 && transform)
+        {
+            Vector3 tempPos = Obj1.position;
+            Quaternion tempRot = Obj1.rotation;
+            Obj1.position = transform.position;
+            Obj1.rotation = PlayerModel.rotation;
+            transform.position = tempPos;
+            PlayerModel.rotation = tempRot;
+            if(transform == transform)
+            {
+                GetComponent<PlayerMovementController>().setYaw(tempRot.y);
+            }
+            knifeCount = KnifeCount.Both;
+
+
+            Renderer rend = Obj1.GetComponent<Renderer>();
+            var mats = new List<Material>(rend.materials);
+            mats.RemoveAll(m => m.name.Contains(SelectionMaterial.name));  
+
+            rend.materials = mats.ToArray();
+
+
+            Obj1.GetComponent<ITeleportable>()?.OnTeleported();
+            transform.GetComponent<ITeleportable>()?.OnTeleported();
         }
     }
 }
