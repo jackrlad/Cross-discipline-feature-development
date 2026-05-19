@@ -12,44 +12,44 @@ public class PlayerAttack : MonoBehaviour
     private KnifeCount knifeCount = KnifeCount.Both;
     private float MaxAttackCooldown = 0.3f;
     private float AttackCooldown;
-    private bool isHoldingAttack = true;
-    
+    private bool _throwHeld = false;
+
     void Start()
     {
         ir = GetComponent<InputReader>();
         swap = GetComponent<SwapSystem>();
-        AttackCooldown = MaxAttackCooldown;
     }
 
     void Update()
     {
+        // Melee attack — hold to swing, cooldown between swings
         if (ir.Attack)
         {
             if (AttackCooldown > 0)
-            {
                 AttackCooldown -= Time.deltaTime;
-            }
             else
             {
                 Attack();
                 AttackCooldown = MaxAttackCooldown;
-                isHoldingAttack = true;
             }
         }
-        else if(!isHoldingAttack && AttackCooldown > 0 && AttackCooldown < MaxAttackCooldown)
+        else
+        {
+            AttackCooldown = MaxAttackCooldown;
+        }
+
+        // Knife throw — fires once per press
+        if (ir.Throw && !_throwHeld)
         {
             knifeCount = swap.SwapHit();
-            AttackCooldown = MaxAttackCooldown;
+            _throwHeld = true;
         }
-        
-        if(!ir.Attack)
+        else if (!ir.Throw)
         {
-            isHoldingAttack = false;
-            AttackCooldown = MaxAttackCooldown;
+            _throwHeld = false;
         }
 
-        //Debug.Log(AttackCooldown);
-
+        // Execute the swap
         if (ir.Swap)
         {
             knifeCount = swap.SwapTrigger();

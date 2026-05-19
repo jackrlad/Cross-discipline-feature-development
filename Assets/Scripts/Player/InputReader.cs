@@ -7,6 +7,7 @@ public class InputReader : MonoBehaviour
 {
     public Vector2 Move { get; private set;}
     public bool Attack {get; private set;}
+    public bool Throw {get; private set;}
     public bool Swap {get; private set;}
     public bool Jump {get; private set;}
     public bool cRight {get; private set;}
@@ -17,6 +18,7 @@ public class InputReader : MonoBehaviour
 
     private InputAction moveAction;
     private InputAction attackAction;
+    private InputAction throwAction;
     private InputAction swapAction;
     private InputAction jumpAction;
     private InputAction cRightAction;
@@ -31,6 +33,7 @@ public class InputReader : MonoBehaviour
         var gameplay = playerInput.actions.FindActionMap("Gameplay", true);
         moveAction = gameplay.FindAction("Movement", true);
         attackAction = gameplay.FindAction("Attack", true);
+        throwAction = gameplay.FindAction("Throw", true);
         swapAction = gameplay.FindAction("Swap", true);
         jumpAction = gameplay.FindAction("Jump", true);
         cRightAction = gameplay.FindAction("Camera Right", true);
@@ -48,6 +51,9 @@ public class InputReader : MonoBehaviour
 
         attackAction.performed += OnAttack;
         attackAction.canceled += OnAttack;
+
+        throwAction.performed += OnThrow;
+        throwAction.canceled += OnThrow;
 
         swapAction.performed += OnSwap;
         swapAction.canceled += OnSwap;
@@ -73,6 +79,9 @@ public class InputReader : MonoBehaviour
         attackAction.performed -= OnAttack;
         attackAction.canceled -= OnAttack;
 
+        throwAction.performed -= OnThrow;
+        throwAction.canceled -= OnThrow;
+
         swapAction.performed -= OnSwap;
         swapAction.canceled -= OnSwap;
 
@@ -97,6 +106,11 @@ public class InputReader : MonoBehaviour
     private void OnAttack(InputAction.CallbackContext ctx)
     {
         Attack = ctx.ReadValueAsButton();
+    }
+
+    private void OnThrow(InputAction.CallbackContext ctx)
+    {
+        Throw = ctx.ReadValueAsButton();
     }
 
     private void OnSwap(InputAction.CallbackContext ctx)
@@ -128,6 +142,7 @@ public class InputReader : MonoBehaviour
     {
         Move = Vector2.zero;
         Attack = false;
+        Throw = false;
         Swap = false;
         Jump = false;
         cRight = false;

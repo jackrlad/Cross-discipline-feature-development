@@ -25,6 +25,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Throw",
+                    "type": "Button",
+                    "id": "a3f72c18-9d41-4b2e-bc53-7e4a1d8f0c62",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Swap",
                     "type": "Button",
                     "id": "ae808376-6233-48d8-9e1d-57383bcf8b04",
@@ -139,8 +148,8 @@
                 },
                 {
                     "name": "",
-                    "id": "8659198d-c875-43ed-8ca2-5e3cc47b8764",
-                    "path": "<Mouse>/leftButton",
+                    "id": "960f9040-3433-4196-abf9-021a6c8b107d",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -150,12 +159,23 @@
                 },
                 {
                     "name": "",
-                    "id": "960f9040-3433-4196-abf9-021a6c8b107d",
+                    "id": "8659198d-c875-43ed-8ca2-5e3cc47b8764",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Throw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b1c4e927-3f58-4d7a-a812-6d0e3f5b1a84",
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Attack",
+                    "action": "Throw",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
