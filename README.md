@@ -65,4 +65,5 @@ Press **R** to reset the scene. This works in both the editor and in a build.
 
 ## Contact
 Ryan McFly -- enemy AI 
+
 Jack -- player systems and teleportation implementation
